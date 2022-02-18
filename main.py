@@ -1,3 +1,5 @@
+import threading
+import time
 from multiprocessing import Process, Queue
 
 from collector.cpu_collector import CpuCollector
@@ -42,3 +44,12 @@ if __name__ == '__main__':
 
     socket_process = Process(target=client.send)
     socket_process.start()
+
+    while 1:
+        time.sleep(1)
+        set_start_process_idx = 1
+        for process in processes:
+            print(locals()['p' + str(set_start_process_idx)].name, 'is alive : ', locals()['p' + str(set_start_process_idx)].is_alive())
+            set_start_process_idx += 1
+        set_start_process_idx = 1
+        print(socket_process.name, 'is alive : ', socket_process.is_alive())
