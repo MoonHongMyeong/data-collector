@@ -1,4 +1,3 @@
-import threading
 import time
 from multiprocessing import Process, Queue
 
@@ -31,25 +30,31 @@ if __name__ == '__main__':
 
     set_process_idx = 1
     for process in processes:
-        locals()['rt'+str(set_process_idx)] = RepeatedTimer(process['interval'], locals()[process['name']].start)
-        locals()['p'+str(set_process_idx)] = Process(target=locals()['rt'+str(set_process_idx)].start)
+        locals()['rt'+str(set_process_idx)] = \
+            RepeatedTimer(process['interval'], locals()[process['name']].start)
+        locals()['p'+str(set_process_idx)] = \
+            Process(target=locals()['rt'+str(set_process_idx)].start)
         set_process_idx += 1
-    set_process_idx = 1
 
     set_start_process_idx = 1
     for process in processes:
         locals()['p'+str(set_start_process_idx)].start()
         set_start_process_idx += 1
-    set_start_process_idx = 1
 
     socket_process = Process(target=client.send)
     socket_process.start()
 
     while 1:
+
         time.sleep(1)
+
         set_start_process_idx = 1
         for process in processes:
-            print(locals()['p' + str(set_start_process_idx)].name, 'is alive : ', locals()['p' + str(set_start_process_idx)].is_alive())
+
+            if not locals()['p' + str(set_start_process_idx)].is_alive():
+                locals()['p' + str(set_start_process_idx)].start()
+
             set_start_process_idx += 1
-        set_start_process_idx = 1
-        print(socket_process.name, 'is alive : ', socket_process.is_alive())
+
+        if not socket_process.is_alive():
+            socket_process.start()
