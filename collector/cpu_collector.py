@@ -7,11 +7,11 @@ from collector.collector import Collector
 
 class CpuCollector(Collector):
 
-    def __init__(self, queue):
+    def __init__(self, queue, pipe):
         self.type = 1
         self._format = '@hfd'
-        self._is_running = False
         self._queue = queue
+        self._pipe = pipe
 
     def _collect_data(self):
         rate = psutil.cpu_percent()
@@ -28,13 +28,9 @@ class CpuCollector(Collector):
     def _run(self):
         collected_data = self._collect_data()
         pack_data = self._format_struct_to_data(collected_data)
-
         self._send_socket(pack_data)
 
-        self.stop()
-
     def start(self):
-        super(CpuCollector, self).start()
-
-    def stop(self):
-        super(CpuCollector, self).stop()
+        while 1:
+            if self._pipe.recv() is not None:
+                self._run()

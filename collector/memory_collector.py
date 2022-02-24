@@ -1,6 +1,5 @@
 import struct
 import time
-
 import psutil
 
 from collector.collector import Collector
@@ -8,12 +7,12 @@ from collector.collector import Collector
 
 class MemoryCollector(Collector):
 
-    def __init__(self, queue):
+    def __init__(self, queue, pipe):
         self.type = 2
         self._format = '@hfd'
-        self._is_running = False
         self.memory = psutil.virtual_memory()
         self._queue = queue
+        self._pipe = pipe
 
     def _collect_data(self):
         memory_rate = self.memory.percent
@@ -30,13 +29,9 @@ class MemoryCollector(Collector):
     def _run(self):
         collected_data = self._collect_data()
         pack_data = self._format_struct_to_data(collected_data)
-
         self._send_socket(pack_data)
 
-        self.stop()
-
     def start(self):
-        super(MemoryCollector, self).start()
-        
-    def stop(self):
-        super(MemoryCollector, self).stop()
+        while 1:
+            if self._pipe.recv() is not None:
+                self._run()

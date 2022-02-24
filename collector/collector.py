@@ -21,8 +21,4 @@ class Collector(metaclass=ABCMeta):
 
     @abstractmethod
     def start(self):
-        self._run()
-
-    @abstractmethod
-    def stop(self):
-        self._is_running = False
+        pass
