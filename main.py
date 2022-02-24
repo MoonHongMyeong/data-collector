@@ -5,7 +5,7 @@ from collector.cpu_collector import CpuCollector
 from collector.memory_collector import MemoryCollector
 from collector.storage_collector import StorageCollector
 from timer.repeated_timer import RepeatedTimer
-from utils.client import Client
+from utils.socketclient import Client
 from utils.config_reader import ConfigReader
 
 if __name__ == '__main__':
