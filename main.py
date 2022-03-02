@@ -27,12 +27,7 @@ if __name__ == '__main__':
         locals()['p_con' + str(index)], locals()['c_con' + str(index)] = Pipe()
         pipes.append((process['type'], process['interval'], locals()['p_con' + str(index)]))
 
-        if process['type'] == 1:
-            locals()[process['name']] = CpuCollector(que, locals()['c_con' + str(index)])
-        elif process['type'] == 2:
-            locals()[process['name']] = MemoryCollector(que, locals()['c_con' + str(index)])
-        elif process['type'] == 3:
-            locals()[process['name']] = StorageCollector(que, locals()['c_con' + str(index)])
+        locals()[process['name']] = locals()[process['type']](que, locals()['c_con' + str(index)])
 
         locals()['p' + str(index)] = Process(target=locals()[process['name']].start)
         locals()['p' + str(index)].start()
@@ -54,9 +49,11 @@ if __name__ == '__main__':
         for process in processes:
 
             if not locals()['p' + str(start_process_idx)].is_alive():
+                locals()['p' + str(start_process_idx)].kill()
                 locals()['p' + str(start_process_idx)].start()
 
             start_process_idx += 1
 
         if not socket_process.is_alive():
+            socket_process.kill()
             socket_process.start()

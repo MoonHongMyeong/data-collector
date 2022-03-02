@@ -16,7 +16,7 @@ class ConfigReader:
 
         for line in lines:
             if 'type: ' in line:
-                collector_type.append(int(line.replace('type: ', '')))
+                collector_type.append(line.replace('type: ', ''))
             elif 'name: ' in line:
                 name.append(line.replace('name: ', ''))
             elif 'interval: ' in line:
